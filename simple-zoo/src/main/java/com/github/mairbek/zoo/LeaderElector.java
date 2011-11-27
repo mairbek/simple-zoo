@@ -13,8 +13,6 @@ public class LeaderElector {
 
         void electedAsLeader();
 
-        void electedAsFollower();
-
     }
 
     private final Zoo zoo;
@@ -47,8 +45,6 @@ public class LeaderElector {
                 listener.electedAsLeader();
                 break;
             }
-
-            listener.electedAsFollower();
 
             final CountDownLatch signal = new CountDownLatch(1);
 

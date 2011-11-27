@@ -16,9 +16,9 @@ public class LeaderDemo {
         LOG.info("Starting demo process");
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        Worker worker = new Worker();
+        LeaderProcess leaderProcess = new LeaderProcess();
 
-        executor.execute(worker);
+        executor.execute(leaderProcess);
 
         try {
             Thread.sleep(5000);
@@ -33,23 +33,18 @@ public class LeaderDemo {
 
         LeaderElector leaderElector = new LeaderElector(zoo, "/election-demo");
 
-        leaderElector.participate(worker);
+        leaderElector.participate(leaderProcess);
 
     }
 
-    public static class Worker implements Runnable, LeaderElector.Listener {
-        private static final Logger LOG = LoggerFactory.getLogger(Worker.class);
+    public static class LeaderProcess implements Runnable, LeaderElector.Listener {
+        private static final Logger LOG = LoggerFactory.getLogger(LeaderProcess.class);
         
         private volatile State state = State.IDLE;
 
         @Override
         public void electedAsLeader() {
             state = State.LEADER;
-        }
-
-        @Override
-        public void electedAsFollower() {
-            state = State.FOLLOWER;
         }
 
         @Override
@@ -70,9 +65,6 @@ public class LeaderDemo {
                 case IDLE:
                     LOG.info("Idle");
                     break;
-                case FOLLOWER:
-                    LOG.info("Following");
-                    break;
                 case LEADER:
                     LOG.info("Leading");
                     break;
@@ -82,7 +74,7 @@ public class LeaderDemo {
         }
 
         private static enum State {
-            IDLE, FOLLOWER, LEADER
+            IDLE, LEADER
         }
 
     }
