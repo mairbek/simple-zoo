@@ -6,7 +6,7 @@
 
     <groupId>com.github.mairbek</groupId>
     <artifactId>simple-zoo</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <packaging>jar</packaging>
 
     <build>
