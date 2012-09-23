@@ -1,15 +1,17 @@
 package com.github.mairbek.zoo;
 
-import com.google.common.base.Objects;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 
 public class ZooLock implements Lock {
     private static final String DEFAULT_LOCK_NODE_PREFIX = "lock--";
@@ -18,6 +20,12 @@ public class ZooLock implements Lock {
     private final Zoo zoo;
     private final String path;
     private final String prefix;
+    private Predicate<String> matchPrefixF = new Predicate<String>() {
+        @Override
+        public boolean apply(String input) {
+            return input.startsWith(prefix);
+        }
+    };
 
     public ZooLock(Zoo zoo, String path) {
         this(zoo, path, DEFAULT_LOCK_NODE_PREFIX);
@@ -50,7 +58,7 @@ public class ZooLock implements Lock {
 
         while (true) {
 
-            List<String> children = zoo.children(path);
+            Collection<String> children = Collections2.filter(zoo.children(path), matchPrefixF);
 
             String closestNode = closestNode(lockNode, children);
 
